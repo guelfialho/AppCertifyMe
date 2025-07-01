@@ -4,14 +4,18 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.appcertifyme.screens.CadastroScreen
+import com.example.appcertifyme.screens.LoginScreen
 import com.example.appcertifyme.ui.theme.AppCertifyMeTheme
+import androidx.compose.ui.unit.dp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,29 +23,28 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AppCertifyMeTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                val navController = rememberNavController()
+
+                Surface(color = MaterialTheme.colorScheme.background) {
+                    NavHost(
+                        navController = navController,
+                        startDestination = "cadastro"
+                    ) {
+                        composable("cadastro") {
+                            CadastroScreen(navController)
+                        }
+                        composable("login") {
+                            LoginScreen(navController)
+                        }
+                        composable("homeEstudante") {
+                            Text("Home do Estudante", modifier = Modifier.padding(24.dp))
+                        }
+                        composable("homeOrganizador") {
+                            Text("Home do Organizador", modifier = Modifier.padding(24.dp))
+                        }
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    AppCertifyMeTheme {
-        Greeting("Android")
     }
 }
