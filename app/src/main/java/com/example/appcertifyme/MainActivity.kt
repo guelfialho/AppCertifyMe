@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.appcertifyme.screens.CadastroScreen
 import com.example.appcertifyme.screens.LoginScreen
 import com.example.appcertifyme.ui.theme.AppCertifyMeTheme
+import com.example.appcertifyme.screens.HomeEstudanteScreen
 import androidx.compose.ui.unit.dp
 
 class MainActivity : ComponentActivity() {
@@ -37,7 +38,7 @@ class MainActivity : ComponentActivity() {
                             LoginScreen(navController)
                         }
                         composable("homeEstudante") {
-                            Text("Home do Estudante", modifier = Modifier.padding(24.dp))
+                            HomeEstudanteScreen(navController)
                         }
                         composable("homeOrganizador") {
                             Text("Home do Organizador", modifier = Modifier.padding(24.dp))
