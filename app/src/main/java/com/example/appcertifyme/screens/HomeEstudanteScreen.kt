@@ -17,6 +17,9 @@ import com.example.appcertifyme.model.Certificado
 import com.example.appcertifyme.model.Evento
 import com.example.appcertifyme.utils.gerarQrCode
 import kotlinx.coroutines.launch
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+
 
 @Composable
 fun HomeEstudanteScreen(
@@ -28,11 +31,33 @@ fun HomeEstudanteScreen(
     var selectedTab by remember { mutableStateOf(0) }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        Text(
-            text = "Bem-vindo, $nomeUsuario!",
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(16.dp)
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.AccountCircle,
+                contentDescription = "Ícone do usuário",
+                modifier = Modifier.size(40.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column {
+                Text(
+                    text = "Bem-vindo!",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = nomeUsuario,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+
 
         TabRow(selectedTabIndex = selectedTab) {
             tabs.forEachIndexed { index, title ->
