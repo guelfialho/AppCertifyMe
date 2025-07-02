@@ -17,6 +17,7 @@ import com.example.appcertifyme.screens.LoginScreen
 import com.example.appcertifyme.ui.theme.AppCertifyMeTheme
 import com.example.appcertifyme.screens.HomeEstudanteScreen
 import com.example.appcertifyme.screens.HomeOrganizadorScreen
+import com.example.appcertifyme.screens.TelaInicialScreen
 import androidx.compose.ui.unit.dp
 
 class MainActivity : ComponentActivity() {
@@ -30,8 +31,11 @@ class MainActivity : ComponentActivity() {
                 Surface(color = MaterialTheme.colorScheme.background) {
                     NavHost(
                         navController = navController,
-                        startDestination = "cadastro"
+                        startDestination = "telaInicial"
                     ) {
+                        composable("telaInicial") {
+                            TelaInicialScreen(navController)
+                        }
                         composable("cadastro") {
                             CadastroScreen(navController)
                         }
