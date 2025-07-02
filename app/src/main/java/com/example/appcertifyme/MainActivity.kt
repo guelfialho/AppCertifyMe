@@ -16,6 +16,7 @@ import com.example.appcertifyme.screens.CadastroScreen
 import com.example.appcertifyme.screens.LoginScreen
 import com.example.appcertifyme.ui.theme.AppCertifyMeTheme
 import com.example.appcertifyme.screens.HomeEstudanteScreen
+import com.example.appcertifyme.screens.HomeOrganizadorScreen
 import androidx.compose.ui.unit.dp
 
 class MainActivity : ComponentActivity() {
@@ -41,7 +42,7 @@ class MainActivity : ComponentActivity() {
                             HomeEstudanteScreen(navController)
                         }
                         composable("homeOrganizador") {
-                            Text("Home do Organizador", modifier = Modifier.padding(24.dp))
+                            HomeOrganizadorScreen(navController)
                         }
                     }
                 }

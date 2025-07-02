@@ -5,6 +5,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -17,9 +19,6 @@ import com.example.appcertifyme.model.Certificado
 import com.example.appcertifyme.model.Evento
 import com.example.appcertifyme.utils.gerarQrCode
 import kotlinx.coroutines.launch
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-
 
 @Composable
 fun HomeEstudanteScreen(
@@ -32,9 +31,7 @@ fun HomeEstudanteScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
         ) {
@@ -46,18 +43,10 @@ fun HomeEstudanteScreen(
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column {
-                Text(
-                    text = "Bem-vindo!",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = nomeUsuario,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                Text(text = "Bem-vindo!", style = MaterialTheme.typography.bodyLarge)
+                Text(text = nomeUsuario, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
             }
         }
-
 
         TabRow(selectedTabIndex = selectedTab) {
             tabs.forEachIndexed { index, title ->
@@ -71,7 +60,7 @@ fun HomeEstudanteScreen(
 
         when (selectedTab) {
             0 -> AbaEventos()
-            1 -> AbaCertificados()
+            1 -> AbaCertificados(uuid)
             2 -> AbaQrCode(uuid)
         }
     }
@@ -84,17 +73,13 @@ fun AbaEventos() {
 
     LaunchedEffect(Unit) {
         scope.launch {
-            eventos = EventoProvider.listarEventos()
+            eventos = EventoProvider.listarTodosEventos()
         }
     }
 
     LazyColumn(modifier = Modifier.padding(16.dp)) {
         items(eventos) { evento ->
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 12.dp)
-            ) {
+            Card(modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)) {
                 Column(modifier = Modifier.padding(12.dp)) {
                     Text(text = evento.titulo, style = MaterialTheme.typography.titleMedium)
                     Text(text = evento.descricao)
@@ -111,24 +96,20 @@ fun AbaEventos() {
 }
 
 @Composable
-fun AbaCertificados() {
+fun AbaCertificados(uuid: String) {
     val scope = rememberCoroutineScope()
     var certificados by remember { mutableStateOf<List<Certificado>>(emptyList()) }
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         scope.launch {
-            certificados = CertificadoProvider.listarCertificados()
+            certificados = CertificadoProvider.listarCertificados(uuid)
         }
     }
 
     LazyColumn(modifier = Modifier.padding(16.dp)) {
         items(certificados) { cert ->
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 12.dp)
-            ) {
+            Card(modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)) {
                 Column(modifier = Modifier.padding(12.dp)) {
                     Text(text = cert.evento.titulo, style = MaterialTheme.typography.titleMedium)
                     Text(text = "Data: ${cert.evento.data}")
@@ -147,10 +128,7 @@ fun AbaCertificados() {
                         },
                         enabled = cert.presencaConfirmada
                     ) {
-                        Text(
-                            if (cert.presencaConfirmada) "Baixar Certificado"
-                            else "Aguardando Confirmação"
-                        )
+                        Text(if (cert.presencaConfirmada) "Baixar Certificado" else "Aguardando Confirmação")
                     }
                 }
             }
@@ -163,9 +141,7 @@ fun AbaQrCode(uuid: String) {
     val qr = remember { gerarQrCode(uuid) }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
+        modifier = Modifier.fillMaxSize().padding(24.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
     ) {
