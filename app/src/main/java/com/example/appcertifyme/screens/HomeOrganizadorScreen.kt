@@ -1,6 +1,7 @@
 package com.example.appcertifyme.screens
 
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,7 +14,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.appcertifyme.components.HeaderUsuario
 import com.example.appcertifyme.data.EventoProvider
+import com.example.appcertifyme.data.PresencaProvider
 import com.example.appcertifyme.model.Evento
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.launch
 
 @Composable
@@ -26,6 +30,32 @@ fun HomeOrganizadorScreen(
     var eventos by remember { mutableStateOf<List<Evento>>(emptyList()) }
     var showDialog by remember { mutableStateOf(false) }
 
+    // Launcher global (reusado por cada evento ao clicar)
+    var eventoSelecionado by remember { mutableStateOf<Evento?>(null) }
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ScanContract(),
+        onResult = { result ->
+            if (result.contents != null && eventoSelecionado != null) {
+                val uuidEstudante = result.contents
+                val eventoId = eventoSelecionado!!.id
+
+                scope.launch {
+                    val sucesso = PresencaProvider.confirmarPresenca(uuidEstudante, eventoId)
+                    Toast.makeText(
+                        context,
+                        if (sucesso) "Presença confirmada!" else "Erro ao confirmar.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    eventoSelecionado = null
+                }
+            } else {
+                Toast.makeText(context, "Leitura cancelada", Toast.LENGTH_SHORT).show()
+                eventoSelecionado = null
+            }
+        }
+    )
+
     LaunchedEffect(Unit) {
         scope.launch {
             eventos = EventoProvider.listarEventosCriados(nomeOrganizador)
@@ -37,7 +67,6 @@ fun HomeOrganizadorScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Botão logo abaixo do header
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -73,15 +102,16 @@ fun HomeOrganizadorScreen(
                         Text(text = evento.descricao)
                         Text(text = "Data: ${evento.data}")
                         Spacer(modifier = Modifier.height(8.dp))
+
                         Button(onClick = {
-                            scope.launch {
-                                val sucesso = EventoProvider.confirmarPresenca(evento.id, uuidEstudante = "uuid-mock")
-                                Toast.makeText(
-                                    context,
-                                    if (sucesso) "Presença confirmada!" else "Erro ao confirmar.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
+                            eventoSelecionado = evento
+                            launcher.launch(
+                                ScanOptions().apply {
+                                    setPrompt("Aponte para o QR do estudante")
+                                    setBeepEnabled(false)
+                                    setOrientationLocked(true)
+                                }
+                            )
                         }) {
                             Text("Confirmar presença via QR")
                         }
@@ -108,6 +138,7 @@ fun HomeOrganizadorScreen(
     }
 }
 
+
 @Composable
 fun DialogNovoEvento(onDismiss: () -> Unit, onSalvar: (String, String, String) -> Unit) {
     var titulo by remember { mutableStateOf("") }
@@ -131,9 +162,21 @@ fun DialogNovoEvento(onDismiss: () -> Unit, onSalvar: (String, String, String) -
         title = { Text("Novo Evento") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(value = titulo, onValueChange = { titulo = it }, label = { Text("Título") })
-                OutlinedTextField(value = descricao, onValueChange = { descricao = it }, label = { Text("Descrição") })
-                OutlinedTextField(value = data, onValueChange = { data = it }, label = { Text("Data") })
+                OutlinedTextField(
+                    value = titulo,
+                    onValueChange = { titulo = it },
+                    label = { Text("Título") }
+                )
+                OutlinedTextField(
+                    value = descricao,
+                    onValueChange = { descricao = it },
+                    label = { Text("Descrição") }
+                )
+                OutlinedTextField(
+                    value = data,
+                    onValueChange = { data = it },
+                    label = { Text("Data") }
+                )
             }
         }
     )
