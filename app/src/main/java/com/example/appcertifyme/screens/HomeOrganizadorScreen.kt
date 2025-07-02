@@ -11,12 +11,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.appcertifyme.components.HeaderUsuario
 import com.example.appcertifyme.data.EventoProvider
 import com.example.appcertifyme.model.Evento
 import kotlinx.coroutines.launch
 
 @Composable
-fun HomeOrganizadorScreen(navController: NavController, nomeOrganizador: String = "Organizador UFBA") {
+fun HomeOrganizadorScreen(
+    navController: NavController,
+    nomeOrganizador: String = "Organizador UFBA"
+) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var eventos by remember { mutableStateOf<List<Evento>>(emptyList()) }
@@ -28,12 +32,40 @@ fun HomeOrganizadorScreen(navController: NavController, nomeOrganizador: String 
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Text("Seus Eventos", style = MaterialTheme.typography.headlineSmall)
+    Column(modifier = Modifier.fillMaxSize()) {
+        HeaderUsuario(nomeUsuario = nomeOrganizador)
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Botão logo abaixo do header
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Button(onClick = { showDialog = true }) {
+                Text("+ Novo Evento")
+            }
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        LazyColumn {
+        Text(
+            "Seus Eventos",
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .padding(horizontal = 16.dp)
+        ) {
             items(eventos) { evento ->
                 Card(modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)) {
                     Column(modifier = Modifier.padding(12.dp)) {
@@ -44,7 +76,11 @@ fun HomeOrganizadorScreen(navController: NavController, nomeOrganizador: String 
                         Button(onClick = {
                             scope.launch {
                                 val sucesso = EventoProvider.confirmarPresenca(evento.id, uuidEstudante = "uuid-mock")
-                                Toast.makeText(context, if (sucesso) "Presença confirmada!" else "Erro ao confirmar.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    if (sucesso) "Presença confirmada!" else "Erro ao confirmar.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }) {
                             Text("Confirmar presença via QR")
@@ -53,28 +89,22 @@ fun HomeOrganizadorScreen(navController: NavController, nomeOrganizador: String 
                 }
             }
         }
+    }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = { showDialog = true }, modifier = Modifier.align(Alignment.End)) {
-            Text("+ Novo Evento")
-        }
-
-        if (showDialog) {
-            DialogNovoEvento(
-                onDismiss = { showDialog = false },
-                onSalvar = { titulo, descricao, data ->
-                    scope.launch {
-                        val criado = EventoProvider.criarEvento(titulo, descricao, data, nomeOrganizador)
-                        if (criado) {
-                            eventos = EventoProvider.listarEventosCriados(nomeOrganizador)
-                            Toast.makeText(context, "Evento criado com sucesso!", Toast.LENGTH_SHORT).show()
-                        }
-                        showDialog = false
+    if (showDialog) {
+        DialogNovoEvento(
+            onDismiss = { showDialog = false },
+            onSalvar = { titulo, descricao, data ->
+                scope.launch {
+                    val criado = EventoProvider.criarEvento(titulo, descricao, data, nomeOrganizador)
+                    if (criado) {
+                        eventos = EventoProvider.listarEventosCriados(nomeOrganizador)
+                        Toast.makeText(context, "Evento criado com sucesso!", Toast.LENGTH_SHORT).show()
                     }
+                    showDialog = false
                 }
-            )
-        }
+            }
+        )
     }
 }
 
