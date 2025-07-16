@@ -19,6 +19,8 @@ import com.example.appcertifyme.screens.HomeEstudanteScreen
 import com.example.appcertifyme.screens.HomeOrganizadorScreen
 import com.example.appcertifyme.screens.TelaInicialScreen
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,8 +44,16 @@ class MainActivity : ComponentActivity() {
                         composable("login") {
                             LoginScreen(navController)
                         }
-                        composable("homeEstudante") {
-                            HomeEstudanteScreen(navController)
+                        composable(
+                            "homeEstudante/{nome}/{id}",
+                            arguments = listOf(
+                                navArgument("nome") { type = NavType.StringType },
+                                navArgument("id") { type = NavType.StringType }
+                            )
+                        ) { backStackEntry ->
+                            val nome = backStackEntry.arguments?.getString("nome") ?: "Sem Nome"
+                            val id = backStackEntry.arguments?.getString("id") ?: "Sem UUID"
+                            HomeEstudanteScreen(navController, nome, id)
                         }
                         composable("homeOrganizador") {
                             HomeOrganizadorScreen(navController)

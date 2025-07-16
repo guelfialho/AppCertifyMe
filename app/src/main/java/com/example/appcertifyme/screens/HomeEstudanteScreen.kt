@@ -24,14 +24,14 @@ import com.example.appcertifyme.components.HeaderUsuario
 @Composable
 fun HomeEstudanteScreen(
     navController: NavController,
-    nomeUsuario: String = "Fulano UFBA",
-    uuid: String = "123e4567-e89b-12d3-a456-426614174000"
+    nome: String,
+    id: String
 ) {
     val tabs = listOf("Eventos", "Certificados", "QrCode")
     var selectedTab by remember { mutableStateOf(0) }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        HeaderUsuario(nomeUsuario = nomeUsuario)
+        HeaderUsuario(nomeUsuario = nome)
 
         TabRow(selectedTabIndex = selectedTab) {
             tabs.forEachIndexed { index, title ->
@@ -45,8 +45,8 @@ fun HomeEstudanteScreen(
 
         when (selectedTab) {
             0 -> AbaEventos()
-            1 -> AbaCertificados(uuid)
-            2 -> AbaQrCode(uuid)
+            1 -> AbaCertificados(id)
+            2 -> AbaQrCode(id)
         }
     }
 }
@@ -81,14 +81,14 @@ fun AbaEventos() {
 }
 
 @Composable
-fun AbaCertificados(uuid: String) {
+fun AbaCertificados(id: String) {
     val scope = rememberCoroutineScope()
     var certificados by remember { mutableStateOf<List<Certificado>>(emptyList()) }
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         scope.launch {
-            certificados = CertificadoProvider.listarCertificados(uuid)
+            certificados = CertificadoProvider.listarCertificados(id)
         }
     }
 
@@ -122,8 +122,8 @@ fun AbaCertificados(uuid: String) {
 }
 
 @Composable
-fun AbaQrCode(uuid: String) {
-    val qr = remember { gerarQrCode(uuid) }
+fun AbaQrCode(id: String) {
+    val qr = remember { gerarQrCode(id) }
 
     Column(
         modifier = Modifier.fillMaxSize().padding(24.dp),

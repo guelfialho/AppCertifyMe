@@ -8,7 +8,9 @@ import org.json.JSONObject
 data class RespostaLogin(
     val sucesso: Boolean,
     val mensagem: String,
-    val tipo: TipoConta?
+    val tipo: TipoConta?,
+    val nome: String? = null,
+    val id: String? = null
 )
 
 object LoginProvider {
@@ -24,7 +26,7 @@ object LoginProvider {
                     else -> null
                 }
 
-                RespostaLogin(true, resposta?.mensagem ?: "", tipoConta)
+                RespostaLogin(true, resposta?.mensagem ?: "", tipoConta, resposta?.usuario?.nome, resposta?.usuario?.id)
             } else {
                 val erroJson = response.errorBody()?.string()
                 val mensagemErro = JSONObject(erroJson).optString("mensagem", "Erro desconhecido")

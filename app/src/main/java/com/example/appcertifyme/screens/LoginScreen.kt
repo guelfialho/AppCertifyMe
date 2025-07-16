@@ -83,7 +83,7 @@ fun LoginScreen(navController: NavController) {
 
                                 if (resposta.sucesso) {
                                     when (resposta.tipo) {
-                                        TipoConta.ESTUDANTE -> navController.navigate("homeEstudante")
+                                        TipoConta.ESTUDANTE -> navController.navigate("homeEstudante/${resposta.nome}/${resposta.id}")
                                         TipoConta.ORGANIZADOR -> navController.navigate("homeOrganizador")
                                         else -> {}
                                     }
