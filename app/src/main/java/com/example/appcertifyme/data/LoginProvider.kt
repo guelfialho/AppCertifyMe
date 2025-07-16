@@ -1,7 +1,9 @@
 package com.example.appcertifyme.data
 
 import com.example.appcertifyme.model.TipoConta
-import kotlinx.coroutines.delay
+import com.example.appcertifyme.network.LoginRequest
+import com.example.appcertifyme.network.RetrofitClient
+import org.json.JSONObject
 
 data class RespostaLogin(
     val sucesso: Boolean,
@@ -10,24 +12,28 @@ data class RespostaLogin(
 )
 
 object LoginProvider {
-    suspend fun loginUsuario(
-        email: String,
-        senha: String
-    ): RespostaLogin {
-        delay(1000)
+    suspend fun loginUsuario(email: String, senha: String): RespostaLogin {
+        return try {
+            val response = RetrofitClient.loginService.login(LoginRequest(email, senha))
 
-        return when {
-            email == "teste@ufba.br" && senha == "1234" -> {
-                RespostaLogin(true, "Login bem-sucedido!", TipoConta.ESTUDANTE)
-            }
+            if (response.isSuccessful) {
+                val resposta = response.body()
+                val tipoConta = when (resposta?.usuario?.tipo?.uppercase()) {
+                    "ESTUDANTE" -> TipoConta.ESTUDANTE
+                    "ORGANIZADOR" -> TipoConta.ORGANIZADOR
+                    else -> null
+                }
 
-            email == "org@ufba.br" && senha == "1234" -> {
-                RespostaLogin(true, "Login bem-sucedido!", TipoConta.ORGANIZADOR)
-            }
+                RespostaLogin(true, resposta?.mensagem ?: "", tipoConta)
+            } else {
+                val erroJson = response.errorBody()?.string()
+                val mensagemErro = JSONObject(erroJson).optString("mensagem", "Erro desconhecido")
 
-            else -> {
-                RespostaLogin(false, "Email ou senha inválidos.", null)
+                RespostaLogin(false, mensagemErro, null)
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            RespostaLogin(false, "Erro na conexão: ${e.localizedMessage}", null)
         }
     }
 }
