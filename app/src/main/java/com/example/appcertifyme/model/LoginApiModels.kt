@@ -14,5 +14,6 @@ data class LoginResponse(
 
 data class UsuarioResponse(
     val nome: String,
-    val tipo: String
+    val tipo: String,
+    val id: String
 )
