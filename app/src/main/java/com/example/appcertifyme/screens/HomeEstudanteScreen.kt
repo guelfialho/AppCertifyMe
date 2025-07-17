@@ -86,9 +86,14 @@ fun AbaCertificados(id: String) {
     var certificados by remember { mutableStateOf<List<Certificado>>(emptyList()) }
     val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(id) {
         scope.launch {
-            certificados = CertificadoProvider.listarCertificados(id)
+            try {
+                certificados = CertificadoProvider.listarCertificados(id)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(context, "Erro ao carregar certificados.", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
