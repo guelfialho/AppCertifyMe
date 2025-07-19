@@ -27,4 +27,8 @@ object RetrofitClient {
     val certificadosService: CertificadosService by lazy {
         retrofitWithAuth.create(CertificadosService::class.java)
     }
+
+    val eventoService: EventoService by lazy {
+        retrofitWithAuth.create(EventoService::class.java)
+    }
 }
