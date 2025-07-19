@@ -28,8 +28,15 @@ object EventoProvider {
     }
 
 
-    suspend fun listarEventosCriados(organizador: String): List<Evento> {
-        return emptyList()
+    suspend fun listarEventosOrganizador(organizador: String): List<Evento> {
+        return try {
+
+            val response = RetrofitClient.eventoService.listarEventosOrganizador()
+            if (response.sucesso) response.eventos else emptyList()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
     }
 
     suspend fun criarEvento(titulo: String, descricao: String, data: String, organizador: String): Boolean {

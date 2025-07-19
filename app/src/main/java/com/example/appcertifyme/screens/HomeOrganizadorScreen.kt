@@ -22,8 +22,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun HomeOrganizadorScreen(
-    navController: NavController,
-    nomeOrganizador: String = "Organizador UFBA"
+    navController: NavController, nome: String, id: String
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -58,12 +57,12 @@ fun HomeOrganizadorScreen(
 
     LaunchedEffect(Unit) {
         scope.launch {
-            eventos = EventoProvider.listarEventosCriados(nomeOrganizador)
+            eventos = EventoProvider.listarEventosOrganizador(id)
         }
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        HeaderUsuario(nomeUsuario = nomeOrganizador)
+        HeaderUsuario(nomeUsuario = nome)
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -126,9 +125,9 @@ fun HomeOrganizadorScreen(
             onDismiss = { showDialog = false },
             onSalvar = { titulo, descricao, data ->
                 scope.launch {
-                    val criado = EventoProvider.criarEvento(titulo, descricao, data, nomeOrganizador)
+                    val criado = EventoProvider.criarEvento(titulo, descricao, data, nome)
                     if (criado) {
-                        eventos = EventoProvider.listarEventosCriados(nomeOrganizador)
+                        eventos = EventoProvider.listarEventosOrganizador(id)
                         Toast.makeText(context, "Evento criado com sucesso!", Toast.LENGTH_SHORT).show()
                     }
                     showDialog = false

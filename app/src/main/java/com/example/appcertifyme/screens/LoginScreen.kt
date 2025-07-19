@@ -16,6 +16,8 @@ import androidx.navigation.NavController
 import com.example.appcertifyme.data.LoginProvider
 import kotlinx.coroutines.launch
 import com.example.appcertifyme.model.TipoConta
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -82,9 +84,12 @@ fun LoginScreen(navController: NavController) {
                                 Toast.makeText(context, resposta.mensagem, Toast.LENGTH_SHORT).show()
 
                                 if (resposta.sucesso) {
+                                    val nomeEncoded = URLEncoder.encode(resposta.nome, StandardCharsets.UTF_8.toString())
+                                    val idEncoded = URLEncoder.encode(resposta.id, StandardCharsets.UTF_8.toString())
+
                                     when (resposta.tipo) {
-                                        TipoConta.ESTUDANTE -> navController.navigate("homeEstudante/${resposta.nome}/${resposta.id}")
-                                        TipoConta.ORGANIZADOR -> navController.navigate("homeOrganizador")
+                                        TipoConta.ESTUDANTE -> navController.navigate("homeEstudante/$nomeEncoded/$idEncoded")
+                                        TipoConta.ORGANIZADOR -> navController.navigate("homeOrganizador/$nomeEncoded/$idEncoded")
                                         else -> {}
                                     }
                                 }

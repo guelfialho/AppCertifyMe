@@ -55,8 +55,16 @@ class MainActivity : ComponentActivity() {
                             val id = backStackEntry.arguments?.getString("id") ?: "Sem UUID"
                             HomeEstudanteScreen(navController, nome, id)
                         }
-                        composable("homeOrganizador") {
-                            HomeOrganizadorScreen(navController)
+                        composable(
+                            "homeOrganizador/{nome}/{id}",
+                            arguments = listOf(
+                                navArgument("nome") { type = NavType.StringType },
+                                navArgument("id") { type = NavType.StringType }
+                            )
+                        ) { backStackEntry ->
+                            val nome = backStackEntry.arguments?.getString("nome") ?: "Sem Nome"
+                            val id = backStackEntry.arguments?.getString("id") ?: "Sem UUID"
+                            HomeOrganizadorScreen(navController, nome, id)
                         }
                     }
                 }
