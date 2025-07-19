@@ -39,8 +39,19 @@ object EventoProvider {
         }
     }
 
-    suspend fun criarEvento(titulo: String, descricao: String, data: String, organizador: String): Boolean {
-        return false
+    suspend fun criarEvento(titulo: String, descricao: String, data: String): Boolean {
+        return try {
+            val request = CriarEventoRequest(
+                titulo = titulo,
+                descricao = descricao,
+                data = data
+            )
+            val response = RetrofitClient.eventoService.criarEvento(request)
+            response.sucesso
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 
     suspend fun confirmarPresenca(eventoId: String, uuidEstudante: String): Boolean {

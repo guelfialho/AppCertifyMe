@@ -19,6 +19,16 @@ import com.example.appcertifyme.model.Evento
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.launch
+import android.app.DatePickerDialog
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Composable
 fun HomeOrganizadorScreen(
@@ -125,10 +135,12 @@ fun HomeOrganizadorScreen(
             onDismiss = { showDialog = false },
             onSalvar = { titulo, descricao, data ->
                 scope.launch {
-                    val criado = EventoProvider.criarEvento(titulo, descricao, data, nome)
+                    val criado = EventoProvider.criarEvento(titulo, descricao, data)
                     if (criado) {
                         eventos = EventoProvider.listarEventosOrganizador(id)
                         Toast.makeText(context, "Evento criado com sucesso!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Erro ao criar evento.", Toast.LENGTH_SHORT).show()
                     }
                     showDialog = false
                 }
@@ -144,11 +156,21 @@ fun DialogNovoEvento(onDismiss: () -> Unit, onSalvar: (String, String, String) -
     var descricao by remember { mutableStateOf("") }
     var data by remember { mutableStateOf("") }
 
+    val context = LocalContext.current
+
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = {
-                onSalvar(titulo, descricao, data)
+                // Validação simples do formato yyyy-MM-dd
+                val regex = Regex("""\d{4}-\d{2}-\d{2}""")
+                if (titulo.isBlank() || data.isBlank()) {
+                    Toast.makeText(context, "Título e Data são obrigatórios.", Toast.LENGTH_SHORT).show()
+                } else if (!regex.matches(data)) {
+                    Toast.makeText(context, "Data inválida. Use formato: yyyy-MM-dd", Toast.LENGTH_SHORT).show()
+                } else {
+                    onSalvar(titulo, descricao, data)
+                }
             }) {
                 Text("Salvar")
             }
@@ -174,7 +196,8 @@ fun DialogNovoEvento(onDismiss: () -> Unit, onSalvar: (String, String, String) -
                 OutlinedTextField(
                     value = data,
                     onValueChange = { data = it },
-                    label = { Text("Data") }
+                    label = { Text("Data (yyyy-MM-dd)") },
+                    placeholder = { Text("ex: 2025-07-19") }
                 )
             }
         }
