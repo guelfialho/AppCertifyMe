@@ -45,7 +45,7 @@ fun HomeEstudanteScreen(
 
         when (selectedTab) {
             0 -> AbaEventos()
-            1 -> AbaCertificados(id)
+            1 -> AbaCertificados()
             2 -> AbaQrCode(id)
         }
     }
@@ -81,15 +81,15 @@ fun AbaEventos() {
 }
 
 @Composable
-fun AbaCertificados(id: String) {
+fun AbaCertificados() {
     val scope = rememberCoroutineScope()
     var certificados by remember { mutableStateOf<List<Certificado>>(emptyList()) }
     val context = LocalContext.current
 
-    LaunchedEffect(id) {
+    LaunchedEffect(Unit) {
         scope.launch {
             try {
-                certificados = CertificadoProvider.listarCertificados(id)
+                certificados = CertificadoProvider.listarCertificados()
             } catch (e: Exception) {
                 e.printStackTrace()
                 Toast.makeText(context, "Erro ao carregar certificados.", Toast.LENGTH_SHORT).show()
@@ -125,6 +125,7 @@ fun AbaCertificados(id: String) {
         }
     }
 }
+
 
 @Composable
 fun AbaQrCode(id: String) {

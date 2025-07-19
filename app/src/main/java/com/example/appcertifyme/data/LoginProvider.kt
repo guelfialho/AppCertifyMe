@@ -3,6 +3,7 @@ package com.example.appcertifyme.data
 import com.example.appcertifyme.model.TipoConta
 import com.example.appcertifyme.network.LoginRequest
 import com.example.appcertifyme.network.RetrofitClient
+import com.example.appcertifyme.network.TokenManager
 import org.json.JSONObject
 
 data class RespostaLogin(
@@ -25,6 +26,9 @@ object LoginProvider {
                     "ORGANIZADOR" -> TipoConta.ORGANIZADOR
                     else -> null
                 }
+
+                val token = resposta?.token
+                token?.let { TokenManager.token = it }
 
                 RespostaLogin(true, resposta?.mensagem ?: "", tipoConta, resposta?.usuario?.nome, resposta?.usuario?.id)
             } else {
