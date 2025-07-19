@@ -1,6 +1,7 @@
 package com.example.appcertifyme.data
 
-import kotlinx.coroutines.delay
+import com.example.appcertifyme.model.CadastroRequest
+import com.example.appcertifyme.network.RetrofitClient
 
 data class RespostaCadastro(val sucesso: Boolean, val mensagem: String)
 
@@ -11,12 +12,26 @@ object CadastroProvider {
         senha: String,
         tipo: String
     ): RespostaCadastro {
-        delay(1500)
+        return try {
+            val resposta = RetrofitClient.cadastroService.cadastrarUsuario(
+                CadastroRequest(
+                    nome = nome,
+                    email = email,
+                    senha = senha,
+                    tipo = tipo
+                )
+            )
 
-
-        return RespostaCadastro(
-            sucesso = true,
-            mensagem = "Cadastro realizado com sucesso"
-        )
+            RespostaCadastro(
+                sucesso = resposta.sucesso,
+                mensagem = resposta.mensagem
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            RespostaCadastro(
+                sucesso = false,
+                mensagem = "Erro ao conectar com o servidor: ${e.message}"
+            )
+        }
     }
 }

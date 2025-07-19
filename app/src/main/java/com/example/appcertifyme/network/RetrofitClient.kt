@@ -31,4 +31,8 @@ object RetrofitClient {
     val eventoService: EventoService by lazy {
         retrofitWithAuth.create(EventoService::class.java)
     }
+
+    val cadastroService: CadastroService by lazy {
+        retrofitNoAuth.create(CadastroService::class.java)
+    }
 }
