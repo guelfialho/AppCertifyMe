@@ -55,6 +55,7 @@ fun HomeEstudanteScreen(
 fun AbaEventos() {
     val scope = rememberCoroutineScope()
     var eventos by remember { mutableStateOf<List<Evento>>(emptyList()) }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         scope.launch {
@@ -71,7 +72,16 @@ fun AbaEventos() {
                     Text(text = "Data: ${evento.data}")
                     Text(text = "Organizador: ${evento.organizador}")
                     Spacer(modifier = Modifier.height(8.dp))
-                    Button(onClick = { /* ação mockada de inscrição */ }) {
+                    Button(onClick = {
+                        scope.launch {
+                            val sucesso = EventoProvider.inscreverNoEvento(evento.id)
+                            if (sucesso) {
+                                Toast.makeText(context, "Inscrição realizada com sucesso!", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(context, "Erro ao se inscrever.", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }) {
                         Text("Inscrever-se")
                     }
                 }

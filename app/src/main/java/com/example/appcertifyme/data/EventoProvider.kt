@@ -1,6 +1,7 @@
 package com.example.appcertifyme.data
 
 import com.example.appcertifyme.model.Evento
+import com.example.appcertifyme.models.InscricaoRequest
 import com.example.appcertifyme.network.RetrofitClient
 
 object EventoProvider {
@@ -13,6 +14,19 @@ object EventoProvider {
             emptyList()
         }
     }
+
+    suspend fun inscreverNoEvento(eventoId: String): Boolean {
+        return try {
+            val resposta = RetrofitClient.eventoService.inscrever(
+                InscricaoRequest(eventoId)
+            )
+            resposta.sucesso
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
 
     suspend fun listarEventosCriados(organizador: String): List<Evento> {
         return emptyList()
