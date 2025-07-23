@@ -39,27 +39,27 @@ fun HomeOrganizadorScreen(
     var eventos by remember { mutableStateOf<List<Evento>>(emptyList()) }
     var showDialog by remember { mutableStateOf(false) }
 
-    // Launcher global (reusado por cada evento ao clicar)
     var eventoSelecionado by remember { mutableStateOf<Evento?>(null) }
 
     val launcher = rememberLauncherForActivityResult(
         contract = ScanContract(),
         onResult = { result ->
             if (result.contents != null && eventoSelecionado != null) {
-                val uuidEstudante = result.contents
-                val eventoId = eventoSelecionado!!.id
+                val uuidEstudante = result.contents // Este é o ID do estudante lido do QR Code
+                val eventoId = eventoSelecionado!!.id // Este é o ID do evento selecionado
 
                 scope.launch {
+                    // Chamar o novo PresencaProvider
                     val sucesso = PresencaProvider.confirmarPresenca(uuidEstudante, eventoId)
                     Toast.makeText(
                         context,
-                        if (sucesso) "Presença confirmada!" else "Erro ao confirmar.",
-                        Toast.LENGTH_SHORT
+                        if (sucesso) "Presença confirmada!" else "Erro ao confirmar ou presença já confirmada.",
+                        Toast.LENGTH_LONG // Use LONG para visibilidade
                     ).show()
-                    eventoSelecionado = null
+                    eventoSelecionado = null // Limpar o evento selecionado
                 }
             } else {
-                Toast.makeText(context, "Leitura cancelada", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Leitura cancelada ou evento não selecionado.", Toast.LENGTH_SHORT).show()
                 eventoSelecionado = null
             }
         }
@@ -148,8 +148,7 @@ fun HomeOrganizadorScreen(
         )
     }
 }
-
-
+// Mantenha o DialogNovoEvento inalterado
 @Composable
 fun DialogNovoEvento(onDismiss: () -> Unit, onSalvar: (String, String, String) -> Unit) {
     var titulo by remember { mutableStateOf("") }
@@ -162,7 +161,6 @@ fun DialogNovoEvento(onDismiss: () -> Unit, onSalvar: (String, String, String) -
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = {
-                // Validação simples do formato yyyy-MM-dd
                 val regex = Regex("""\d{4}-\d{2}-\d{2}""")
                 if (titulo.isBlank() || data.isBlank()) {
                     Toast.makeText(context, "Título e Data são obrigatórios.", Toast.LENGTH_SHORT).show()

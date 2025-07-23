@@ -1,11 +1,19 @@
 package com.example.appcertifyme.data
 
-import kotlinx.coroutines.delay
+import com.example.appcertifyme.network.RetrofitClient
+import java.lang.Exception
 
 object PresencaProvider {
-    suspend fun confirmarPresenca(uuidEstudante: String, eventoId: String): Boolean {
-        delay(1000) // simula chamada real
-        println("Mock: presença registrada -> UUID=$uuidEstudante | Evento=$eventoId")
-        return true // sempre sucesso (mock)
+
+    suspend fun confirmarPresenca(estudanteId: String, eventoId: String): Boolean {
+        return try {
+            val request = ConfirmarPresencaRequest(eventoId = eventoId, estudanteId = estudanteId)
+            val response = RetrofitClient.presencaService.confirmarPresenca(request)
+          
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 }

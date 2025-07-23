@@ -35,4 +35,8 @@ object RetrofitClient {
     val cadastroService: CadastroService by lazy {
         retrofitNoAuth.create(CadastroService::class.java)
     }
+
+    val presencaService: PresencaService by lazy {
+        retrofitWithAuth.create(PresencaService::class.java)
+    }
 }
